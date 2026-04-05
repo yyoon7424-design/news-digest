@@ -17,10 +17,8 @@ async function fetchSection(sectionKey, sectionLabel, onDone, onError) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sectionKey, sectionLabel }),
     });
-    const text = await res.text();
-    console.log("raw response:", text.slice(0, 200));
-    const data = JSON.parse(text);
-    if (data.error) throw new Error(data.error);
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || "서버 오류");
     onDone(data.items);
   } catch (e) {
     onError(e?.message || String(e));
