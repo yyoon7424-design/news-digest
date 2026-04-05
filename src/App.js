@@ -243,8 +243,61 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
   );
 }
 
+function UnsubscribePage({ email, onDone }) {
+  const [status, setStatus] = useState("confirm"); // confirm | done | notfound
+
+  const handleUnsubscribe = () => {
+    const saved = JSON.parse(localStorage.getItem("subscribers") || "[]");
+    const exists = saved.find(s => s.email === email);
+    if (!exists) { setStatus("notfound"); return; }
+    const updated = saved.map(s => s.email === email ? { ...s, active: false } : s);
+    localStorage.setItem("subscribers", JSON.stringify(updated));
+    setStatus("done");
+  };
+
+  return (
+    <div className="page" style={{ textAlign: "center", paddingTop: "4rem" }}>
+      <div className="hero-badge">GLOBAL NEWS DIGEST</div>
+      {status === "confirm" && (
+        <>
+          <h2 className="hero-title" style={{ fontSize: "22px", marginTop: "1rem" }}>구독을 취소하시겠어요?</h2>
+          <p style={{ fontSize: "14px", color: "#888", margin: "1rem 0 2rem" }}>{email}</p>
+          <button className="submit-btn active" style={{ maxWidth: "280px", margin: "0 auto" }} onClick={handleUnsubscribe}>
+            구독 취소하기
+          </button>
+          <div style={{ marginTop: "1rem" }}>
+            <button className="switch-link" style={{ fontSize: "13px", color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }} onClick={onDone}>
+              취소하지 않고 돌아가기
+            </button>
+          </div>
+        </>
+      )}
+      {status === "done" && (
+        <div className="success-box" style={{ maxWidth: "360px", margin: "2rem auto" }}>
+          <div className="success-check">✓</div>
+          <div className="success-title">구독이 취소되었습니다</div>
+          <div className="success-desc" style={{ marginTop: "8px" }}>더 이상 뉴스레터가 발송되지 않아요.</div>
+        </div>
+      )}
+      {status === "notfound" && (
+        <div className="error-box" style={{ maxWidth: "360px", margin: "2rem auto" }}>
+          <div className="error-title">이메일을 찾을 수 없습니다</div>
+          <div className="error-msg">이미 취소되었거나 등록되지 않은 이메일이에요.</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function App() {
-  const [page, setPage] = useState("subscribe");
+  const [page, setPage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("unsubscribe") ? "unsubscribe" : "subscribe";
+  });
+  const [unsubEmail] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("unsubscribe") || "";
+  });
   const [subscribers, setSubscribers] = useState(() => {
     try { return JSON.parse(localStorage.getItem("subscribers") || "[]"); } catch { return []; }
   });
@@ -256,6 +309,10 @@ export default function App() {
   const handleSubscribe = ({ name, email }) => {
     setSubscribers(prev => [...prev, { id: Date.now(), email, name, date: new Date().toISOString().slice(0,10), active: true }]);
   };
+
+  if (page === "unsubscribe") {
+    return <UnsubscribePage email={unsubEmail} onDone={() => setPage("subscribe")} />;
+  }
 
   return page === "subscribe"
     ? <SubscribePage onSwitch={() => setPage("dashboard")} onSubscribe={handleSubscribe} />
