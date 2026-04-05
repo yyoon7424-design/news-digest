@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+apiimport { useState, useEffect } from "react";
 import "./App.css";
 
 const SECTIONS = [
@@ -17,7 +17,9 @@ async function fetchSection(sectionKey, sectionLabel, onDone, onError) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ sectionKey, sectionLabel }),
     });
-    const data = await res.json();
+    const text = await res.text();
+    console.log("raw response:", text.slice(0, 200));
+    const data = JSON.parse(text);
     if (data.error) throw new Error(data.error);
     onDone(data.items);
   } catch (e) {
