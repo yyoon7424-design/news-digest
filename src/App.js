@@ -144,7 +144,7 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
     fetch("/api/subscribers")
       .then(r => r.json())
       .then(data => { if (data.subscribers) setSubscribers(data.subscribers); });
-  }, []);
+  }, [setSubscribers]);
 
   const active = subscribers.filter(s => s.active).length;
   const allDone = SECTIONS.every(s => sections[s.key] && !loadingSections[s.key]);
