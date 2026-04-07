@@ -58,14 +58,23 @@ function SubscribePage({ onSwitch, onSubscribe }) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email || !name) return;
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
       onSubscribe({ name, email });
-      setLoading(false);
       setSubmitted(true);
-    }, 1200);
+    } catch (e) {
+      alert("오류: " + e.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -130,6 +139,12 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
   const [anyLoading, setAnyLoading] = useState(false);
   const [errorMsgs, setErrorMsgs] = useState({});
   const [sendStatus, setSendStatus] = useState(null);
+
+  useEffect(() => {
+    fetch("/api/subscribers")
+      .then(r => r.json())
+      .then(data => { if (data.subscribers) setSubscribers(data.subscribers); });
+  }, []);
 
   const active = subscribers.filter(s => s.active).length;
   const allDone = SECTIONS.every(s => sections[s.key] && !loadingSections[s.key]);
