@@ -12,7 +12,7 @@ module.exports = async function handler(req, res) {
   try {
     const { data, error } = await supabase
       .from('subscribers')
-      .upsert({ name, email, active: true })
+      .upsert({ name, email, active: true }, { onConflict: 'email' })
       .select();
     if (error) throw error;
     res.status(200).json({ success: true, data });
