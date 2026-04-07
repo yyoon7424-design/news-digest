@@ -9,7 +9,6 @@ const SECTIONS = [
   { key: "ai", label: "AI 산업", icon: "🤖" },
 ];
 
-// ── API 호출은 /api/news 프록시를 통해 (API 키 보호) ──
 async function fetchSection(sectionKey, sectionLabel, onDone, onError) {
   try {
     const res = await fetch("/api/news", {
@@ -22,10 +21,7 @@ async function fetchSection(sectionKey, sectionLabel, onDone, onError) {
     onDone(data.items);
   } catch (e) {
     onError(e?.message || String(e));
-  } } catch (e) {
-      alert("오류: " + e.message);
-      setStatus("notfound");
-    }
+  }
 }
 
 function SectionBlock({ label, icon, items, loading, errorMsg }) {
@@ -87,7 +83,6 @@ function SubscribePage({ onSwitch, onSubscribe }) {
         <h1 className="hero-title">매일 아침 7시,<br />세계가 한눈에</h1>
         <p className="hero-desc">AI가 선별한 정치·경제·증시·반도체·AI 핵심 뉴스를<br />매일 아침 이메일로 받아보세요.</p>
       </div>
-
       <div className="feature-grid">
         {[
           { icon: "🌍", label: "세계 정치", desc: "주요 5건" },
@@ -104,7 +99,6 @@ function SubscribePage({ onSwitch, onSubscribe }) {
           </div>
         ))}
       </div>
-
       {!submitted ? (
         <div className="form-card">
           <div className="form-group">
@@ -127,7 +121,6 @@ function SubscribePage({ onSwitch, onSubscribe }) {
           <div className="success-desc">{name}님, 내일 아침 7시에 첫 뉴스레터를 보내드릴게요.</div>
         </div>
       )}
-
       <div className="switch-link">
         <button onClick={onSwitch}>관리자 대시보드 →</button>
       </div>
@@ -182,7 +175,6 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
         </div>
         <button onClick={onSwitch}>구독 페이지 →</button>
       </div>
-
       <div className="stat-grid">
         {[
           { label: "전체 구독자", value: subscribers.length },
@@ -195,13 +187,11 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
           </div>
         ))}
       </div>
-
       <div className="tabs">
         {[["overview","뉴스 미리보기"],["subscribers","구독자 관리"],["history","발송 이력"]].map(([k, l]) => (
           <button key={k} className={`tab ${tab === k ? "active" : ""}`} onClick={() => setTab(k)}>{l}</button>
         ))}
       </div>
-
       {tab === "overview" && (
         <div>
           <div className="action-row">
@@ -224,7 +214,6 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
           )}
         </div>
       )}
-
       {tab === "subscribers" && (
         <div>
           {subscribers.length === 0 && <div className="empty-state">구독자가 없습니다.</div>}
@@ -243,7 +232,6 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
           ))}
         </div>
       )}
-
       {tab === "history" && (
         <div>
           {["2026-04-03","2026-04-02","2026-04-01"].map((date, i) => (
@@ -262,9 +250,9 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
 }
 
 function UnsubscribePage({ email, onDone }) {
-  const [status, setStatus] = useState("confirm"); // confirm | done | notfound
+  const [status, setStatus] = useState("confirm");
 
- const handleUnsubscribe = async () => {
+  const handleUnsubscribe = async () => {
     try {
       const res = await fetch("/api/unsubscribe", {
         method: "POST",
@@ -275,6 +263,7 @@ function UnsubscribePage({ email, onDone }) {
       if (data.error) throw new Error(data.error);
       setStatus("done");
     } catch (e) {
+      alert("오류: " + e.message);
       setStatus("notfound");
     }
   };
@@ -290,7 +279,7 @@ function UnsubscribePage({ email, onDone }) {
             구독 취소하기
           </button>
           <div style={{ marginTop: "1rem" }}>
-            <button className="switch-link" style={{ fontSize: "13px", color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }} onClick={onDone}>
+            <button style={{ fontSize: "13px", color: "#888", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }} onClick={onDone}>
               취소하지 않고 돌아가기
             </button>
           </div>
@@ -322,13 +311,7 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     return params.get("unsubscribe") || "";
   });
-  const [subscribers, setSubscribers] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("subscribers") || "[]"); } catch { return []; }
-  });
-
-  useEffect(() => {
-    localStorage.setItem("subscribers", JSON.stringify(subscribers));
-  }, [subscribers]);
+  const [subscribers, setSubscribers] = useState([]);
 
   const handleSubscribe = ({ name, email }) => {
     setSubscribers(prev => [...prev, { id: Date.now(), email, name, date: new Date().toISOString().slice(0,10), active: true }]);
