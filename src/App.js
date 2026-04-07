@@ -261,13 +261,19 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
 function UnsubscribePage({ email, onDone }) {
   const [status, setStatus] = useState("confirm"); // confirm | done | notfound
 
-  const handleUnsubscribe = () => {
-    const saved = JSON.parse(localStorage.getItem("subscribers") || "[]");
-    const exists = saved.find(s => s.email === email);
-    if (!exists) { setStatus("notfound"); return; }
-    const updated = saved.map(s => s.email === email ? { ...s, active: false } : s);
-    localStorage.setItem("subscribers", JSON.stringify(updated));
-    setStatus("done");
+ const handleUnsubscribe = async () => {
+    try {
+      const res = await fetch("/api/unsubscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setStatus("done");
+    } catch (e) {
+      setStatus("notfound");
+    }
   };
 
   return (
