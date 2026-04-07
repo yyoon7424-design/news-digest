@@ -22,7 +22,10 @@ async function fetchSection(sectionKey, sectionLabel, onDone, onError) {
     onDone(data.items);
   } catch (e) {
     onError(e?.message || String(e));
-  }
+  } } catch (e) {
+      alert("오류: " + e.message);
+      setStatus("notfound");
+    }
 }
 
 function SectionBlock({ label, icon, items, loading, errorMsg }) {
