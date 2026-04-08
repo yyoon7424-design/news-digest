@@ -6,9 +6,9 @@ const supabase = createClient(
 );
 
 module.exports = async function handler(req, res) {
-  if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+//  if (req.headers.authorization !== `Bearer ${process.env.CRON_SECRET}`) {
+//    return res.status(401).json({ error: "Unauthorized" });
+//  }
 
   const SECTIONS = [
     { key: "politics", label: "세계 정치" },
