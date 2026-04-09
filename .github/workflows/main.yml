@@ -1,0 +1,15 @@
+name: Daily News Email
+
+on:
+  schedule:
+    - cron: '0 22 * * *'  # 매일 UTC 22:00 = 한국시간 07:00
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  send-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send daily news
+        run: |
+          curl -X GET "https://news-digest-tau-umber.vercel.app/api/cron" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
