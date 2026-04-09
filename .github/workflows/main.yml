@@ -2,8 +2,8 @@ name: Daily News Email
 
 on:
   schedule:
-   - cron: '50 10 * * *'  # UTC 10:50 = 한국시간 19:50
-  workflow_dispatch:  # 수동 실행 가능
+    - cron: '50 10 * * *'
+  workflow_dispatch:
 
 jobs:
   send-news:
