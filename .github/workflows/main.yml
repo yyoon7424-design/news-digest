@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: '0 22 * * *'  # UTC 22:00 = 한국시간 07:00
   workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   send-news:
