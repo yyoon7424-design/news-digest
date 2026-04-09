@@ -53,7 +53,7 @@ module.exports = async function handler(req, res) {
             "Authorization": `Bearer ${RESEND_API_KEY}`,
           },
           body: JSON.stringify({
-            from: "Global News Digest <onboarding@resend.dev>",
+            from: "Global News Digest <news@globalnewsdigest.co.kr>",
             to: sub.email,
             subject: `오늘의 글로벌 뉴스 브리핑 - ${new Date().toLocaleDateString("ko-KR")}`,
             html: generateHTML(sub.name).replace(/\{\{email\}\}/g, sub.email),
