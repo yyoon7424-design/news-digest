@@ -2,7 +2,7 @@ name: Daily News Email
 
 on:
   schedule:
-    - cron: '20 10 * * *'  # UTC 10:20 = 한국시간 19:20
+    - cron: '50 22 * * *'  # UTC 22:50 = 한국시간 07:50
   workflow_dispatch:  # 수동 실행 가능
 
 jobs:
