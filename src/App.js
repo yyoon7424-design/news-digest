@@ -42,12 +42,31 @@ function SectionBlock({ label, icon, items, loading, errorMsg }) {
           <div className="error-title">이 섹션을 불러오는 데 실패했습니다.</div>
           {errorMsg && <div className="error-msg">오류: {errorMsg}</div>}
         </div>
-      ) : (items || []).map((item, i) => (
-        <div key={i} className="news-item">
-          <div className="news-title">{i + 1}. {item.title}</div>
-          <div className="news-summary">{item.summary}</div>
-        </div>
-      ))}
+     ) : (items || []).map((item, i) => {
+        const isWar = item.summary && item.summary.includes("[군사적현황]");
+        if (isWar) {
+          const parts = item.summary.split(/\[정치적파급\]|\[경제영향\]|\[한국경제\]/);
+          const milMatch = item.summary.match(/\[군사적현황\](.*?)(?=\[정치적파급\]|$)/s);
+          const polMatch = item.summary.match(/\[정치적파급\](.*?)(?=\[경제영향\]|$)/s);
+          const ecoMatch = item.summary.match(/\[경제영향\](.*?)(?=\[한국경제\]|$)/s);
+          const korMatch = item.summary.match(/\[한국경제\](.*?)$/s);
+          return (
+            <div key={i} className="news-item" style={{ borderLeft: "3px solid #e74c3c" }}>
+              <div className="news-title" style={{ color: "#e74c3c" }}>⚔️ {i + 1}. {item.title}</div>
+              {milMatch && <div style={{ marginTop: "8px", padding: "6px 10px", background: "#fff3f3", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>🎖️ 군사적 현황</strong><br />{milMatch[1].trim()}</div>}
+              {polMatch && <div style={{ marginTop: "6px", padding: "6px 10px", background: "#f3f0ff", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>🏛️ 정치적 파급</strong><br />{polMatch[1].trim()}</div>}
+              {ecoMatch && <div style={{ marginTop: "6px", padding: "6px 10px", background: "#f0fff4", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>📊 경제 영향</strong><br />{ecoMatch[1].trim()}</div>}
+              {korMatch && <div style={{ marginTop: "6px", padding: "6px 10px", background: "#fffbf0", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>🇰🇷 한국 경제</strong><br />{korMatch[1].trim()}</div>}
+            </div>
+          );
+        }
+        return (
+          <div key={i} className="news-item">
+            <div className="news-title">{i + 1}. {item.title}</div>
+            <div className="news-summary">{item.summary}</div>
+          </div>
+        );
+      })}
     </div>
   );
 }
