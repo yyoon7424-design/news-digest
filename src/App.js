@@ -43,6 +43,7 @@ function SectionBlock({ label, icon, items, loading, errorMsg }) {
           {errorMsg && <div className="error-msg">오류: {errorMsg}</div>}
         </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     ) : (items || []).map((item, i) => (
         <div key={i} className="news-item">
           <div className="news-title">{i + 1}. {item.title}</div>
@@ -50,6 +51,8 @@ function SectionBlock({ label, icon, items, loading, errorMsg }) {
         </div>
       ))}
 =======
+=======
+>>>>>>> Stashed changes
       ) : (items || []).map((item, i) => {
         const isWar = item.summary && item.summary.includes("[군사적현황]");
         if (isWar) {
@@ -67,6 +70,9 @@ function SectionBlock({ label, icon, items, loading, errorMsg }) {
               {korMatch && <div style={{ marginTop: "6px", padding: "6px 10px", background: "#fffbf0", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>🇰🇷 한국 경제</strong><br />{korMatch[1].trim()}</div>}
             </div>
           );
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         }
         return (
