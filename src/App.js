@@ -7,6 +7,7 @@ const SECTIONS = [
   { key: "markets", label: "글로벌 증시", icon: "💹" },
   { key: "semiconductor", label: "반도체", icon: "🔬" },
   { key: "ai", label: "AI 산업", icon: "🤖" },
+  { key: "war", label: "이란·미국·이스라엘 전쟁 현황 및 분석", icon: "⚔️" },
 ];
 
 async function fetchSection(sectionKey, sectionLabel, onDone, onError) {
@@ -90,6 +91,7 @@ function SubscribePage({ onSwitch, onSubscribe }) {
           { icon: "💹", label: "글로벌 증시", desc: "주요 5건" },
           { icon: "🔬", label: "반도체", desc: "주요 5건" },
           { icon: "🤖", label: "AI 산업", desc: "주요 5건" },
+          { icon: "⚔️", label: "전쟁 현황 분석", desc: "심층 분석" },
           { icon: "⏰", label: "오전 7시 발송", desc: "매일 정시" },
         ].map(f => (
           <div key={f.label} className="feature-card">
