@@ -64,10 +64,10 @@ function SectionBlock({ label, icon, items, loading, errorMsg }) {
           return (
             <div key={i} className="news-item" style={{ borderLeft: "3px solid #e74c3c" }}>
               <div className="news-title" style={{ color: "#e74c3c" }}>⚔️ {i + 1}. {item.title}</div>
-              {milMatch && <div style={{ marginTop: "8px", padding: "6px 10px", background: "#fff3f3", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>🎖️ 군사적 현황</strong><br />{milMatch[1].trim()}</div>}
-              {polMatch && <div style={{ marginTop: "6px", padding: "6px 10px", background: "#f3f0ff", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>🏛️ 정치적 파급</strong><br />{polMatch[1].trim()}</div>}
-              {ecoMatch && <div style={{ marginTop: "6px", padding: "6px 10px", background: "#f0fff4", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>📊 경제 영향</strong><br />{ecoMatch[1].trim()}</div>}
-              {korMatch && <div style={{ marginTop: "6px", padding: "6px 10px", background: "#fffbf0", borderRadius: "6px", fontSize: "13px", lineHeight: "1.6" }}><strong>🇰🇷 한국 경제</strong><br />{korMatch[1].trim()}</div>}
+              {milMatch && <div style={{ marginTop: "12px", padding: "10px 14px", background: "#fff3f3", borderRadius: "6px", lineHeight: "1.7" }}><div style={{ fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>🎖️ 군사적 현황</div><div style={{ fontSize: "13px" }}>{milMatch[1].trim()}</div></div>}
+              {polMatch && <div style={{ marginTop: "10px", padding: "10px 14px", background: "#f3f0ff", borderRadius: "6px", lineHeight: "1.7" }}><div style={{ fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>🏛️ 정치적 파급</div><div style={{ fontSize: "13px" }}>{polMatch[1].trim()}</div></div>}
+              {ecoMatch && <div style={{ marginTop: "10px", padding: "10px 14px", background: "#f0fff4", borderRadius: "6px", lineHeight: "1.7" }}><div style={{ fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>📊 경제 영향</div><div style={{ fontSize: "13px" }}>{ecoMatch[1].trim()}</div></div>}
+              {korMatch && <div style={{ marginTop: "10px", padding: "10px 14px", background: "#fffbf0", borderRadius: "6px", lineHeight: "1.7" }}><div style={{ fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>🇰🇷 한국 경제</div><div style={{ fontSize: "13px" }}>{korMatch[1].trim()}</div></div>}
             </div>
           );
 <<<<<<< Updated upstream
