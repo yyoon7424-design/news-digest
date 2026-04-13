@@ -177,7 +177,7 @@ function Dashboard({ onSwitch, subscribers, setSubscribers }) {
             (err) => { setSections(p => ({ ...p, [key]: "error" })); setErrorMsgs(p => ({ ...p, [key]: err })); setLoadingSections(p => ({ ...p, [key]: false })); resolve(); }
           );
         });
-        if (i < SECTIONS.length - 1) await new Promise(r => setTimeout(r, 3000));
+        if (i < SECTIONS.length - 1) await new Promise(r => setTimeout(r, 10000)); 
       }
       setAnyLoading(false);
     };
