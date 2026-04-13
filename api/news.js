@@ -55,6 +55,7 @@ module.exports = async function handler(req, res) {
         }),
       });
       const data = await response.json();
+      if (!response.ok) return res.status(500).json({ error: "API오류: " + JSON.stringify(data) });
       finalText = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("");
     }
 
