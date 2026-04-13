@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
             "anthropic-version": "2023-06-01",
           },
           body: JSON.stringify({
-            model: "claude-opus-4-6",
+            model: "claude-opus-4-5",
             max_tokens: 4000,
             tools: [{ type: "web_search_20250305", name: "web_search" }],
             messages
@@ -49,7 +49,7 @@ module.exports = async function handler(req, res) {
           "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify({
-          model: "claude-opus-4-6",
+          model: "claude-opus-4-5",
           max_tokens: 2000,
           messages
         }),
