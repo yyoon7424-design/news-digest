@@ -42,38 +42,22 @@ function SectionBlock({ label, icon, items, loading, errorMsg }) {
           <div className="error-title">이 섹션을 불러오는 데 실패했습니다.</div>
           {errorMsg && <div className="error-msg">오류: {errorMsg}</div>}
         </div>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    ) : (items || []).map((item, i) => (
-        <div key={i} className="news-item">
-          <div className="news-title">{i + 1}. {item.title}</div>
-          <div className="news-summary">{item.summary}</div>
-        </div>
-      ))}
-=======
-=======
->>>>>>> Stashed changes
       ) : (items || []).map((item, i) => {
         const isWar = item.summary && item.summary.includes("[군사적현황]");
         if (isWar) {
-          const parts = item.summary.split(/\[정치적파급\]|\[경제영향\]|\[한국경제\]/);
           const milMatch = item.summary.match(/\[군사적현황\](.*?)(?=\[정치적파급\]|$)/s);
           const polMatch = item.summary.match(/\[정치적파급\](.*?)(?=\[경제영향\]|$)/s);
           const ecoMatch = item.summary.match(/\[경제영향\](.*?)(?=\[한국경제\]|$)/s);
           const korMatch = item.summary.match(/\[한국경제\](.*?)$/s);
           return (
-            <div key={i} className="news-item" style={{ borderLeft: "3px solid #e74c3c" }}>
+            <div key={i} className="news-item" style={{ borderLeft: "3px solid #e74c3c", marginBottom: "16px" }}>
               <div className="news-title" style={{ color: "#e74c3c" }}>⚔️ {i + 1}. {item.title}</div>
-              {milMatch && <div style={{ marginTop: "12px", padding: "10px 14px", background: "#fff3f3", borderRadius: "6px", lineHeight: "1.7" }}><div style={{ fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>🎖️ 군사적 현황</div><div style={{ fontSize: "13px" }}>{milMatch[1].trim()}</div></div>}
-              {polMatch && <div style={{ marginTop: "10px", padding: "10px 14px", background: "#f3f0ff", borderRadius: "6px", lineHeight: "1.7" }}><div style={{ fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>🏛️ 정치적 파급</div><div style={{ fontSize: "13px" }}>{polMatch[1].trim()}</div></div>}
-              {ecoMatch && <div style={{ marginTop: "10px", padding: "10px 14px", background: "#f0fff4", borderRadius: "6px", lineHeight: "1.7" }}><div style={{ fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>📊 경제 영향</div><div style={{ fontSize: "13px" }}>{ecoMatch[1].trim()}</div></div>}
-              {korMatch && <div style={{ marginTop: "10px", padding: "10px 14px", background: "#fffbf0", borderRadius: "6px", lineHeight: "1.7" }}><div style={{ fontSize: "15px", fontWeight: "700", marginBottom: "8px" }}>🇰🇷 한국 경제</div><div style={{ fontSize: "13px" }}>{korMatch[1].trim()}</div></div>}
+              {milMatch && <div style={{ marginTop: "12px", padding: "12px 16px", background: "#fff3f3", borderRadius: "8px", lineHeight: "1.8" }}><div style={{ fontSize: "16px", fontWeight: "700", marginBottom: "6px", color: "#c0392b" }}>🎖️ 군사적 현황</div><div style={{ fontSize: "13px", color: "#333" }}>{milMatch[1].trim()}</div></div>}
+              {polMatch && <div style={{ marginTop: "8px", padding: "12px 16px", background: "#f3f0ff", borderRadius: "8px", lineHeight: "1.8" }}><div style={{ fontSize: "16px", fontWeight: "700", marginBottom: "6px", color: "#6c3483" }}>🏛️ 정치적 파급</div><div style={{ fontSize: "13px", color: "#333" }}>{polMatch[1].trim()}</div></div>}
+              {ecoMatch && <div style={{ marginTop: "8px", padding: "12px 16px", background: "#f0fff4", borderRadius: "8px", lineHeight: "1.8" }}><div style={{ fontSize: "16px", fontWeight: "700", marginBottom: "6px", color: "#1e8449" }}>📊 경제 영향</div><div style={{ fontSize: "13px", color: "#333" }}>{ecoMatch[1].trim()}</div></div>}
+              {korMatch && <div style={{ marginTop: "8px", padding: "12px 16px", background: "#fffbf0", borderRadius: "8px", lineHeight: "1.8" }}><div style={{ fontSize: "16px", fontWeight: "700", marginBottom: "6px", color: "#b7770d" }}>🇰🇷 한국 경제</div><div style={{ fontSize: "13px", color: "#333" }}>{korMatch[1].trim()}</div></div>}
             </div>
           );
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
         }
         return (
           <div key={i} className="news-item">
@@ -126,7 +110,7 @@ function SubscribePage({ onSwitch, onSubscribe }) {
           { icon: "🔬", label: "반도체", desc: "주요 5건" },
           { icon: "🤖", label: "AI 산업", desc: "주요 5건" },
           { icon: "⚔️", label: "전쟁 현황 분석", desc: "심층 분석" },
-          { icon: "⏰", label: "오전 7시 발송", desc: "매일 정시" },
+          { icon: "⏰", label: "오전 8시 발송", desc: "매일 정시" },
         ].map(f => (
           <div key={f.label} className="feature-card">
             <div className="feature-icon">{f.icon}</div>
@@ -154,7 +138,7 @@ function SubscribePage({ onSwitch, onSubscribe }) {
         <div className="success-box">
           <div className="success-check">✓</div>
           <div className="success-title">구독이 완료되었습니다!</div>
-          <div className="success-desc">{name}님, 내일 아침 7시에 첫 뉴스레터를 보내드릴게요.</div>
+          <div className="success-desc">{name}님, 내일 아침 8시에 첫 뉴스레터를 보내드릴게요.</div>
         </div>
       )}
       <div className="switch-link">
