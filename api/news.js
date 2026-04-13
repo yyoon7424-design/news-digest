@@ -63,7 +63,7 @@ module.exports = async function handler(req, res) {
       const match = line.match(/##\d+##(.+)\|\|(.+)/);
       if (match) items.push({ title: match[1].trim(), summary: match[2].trim() });
     }
-    if (items.length === 0) return res.status(500).json({ error: "파싱 실패: " + finalText.slice(0, 200) });
+   if (items.length === 0) return res.status(500).json({ error: "파싱 실패: [" + finalText.slice(0, 300) + "]" });
     res.status(200).json({ items });
   } catch (e) {
     res.status(500).json({ error: e.message });
