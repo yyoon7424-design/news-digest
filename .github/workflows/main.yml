@@ -2,7 +2,7 @@ name: Daily News Email
 
 on:
   schedule:
-    - cron: '0 23 * * *'  # UTC 23:00 = 한국시간 08:00
+    - cron: '0 23 * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,13 +12,10 @@ jobs:
       - name: Collect news and send email
         run: |
           node << 'EOF'
-          const https = require('https');
-
           const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
           const SUPABASE_URL = process.env.SUPABASE_URL;
           const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
-          const RESEND_API_KEY = process.env.RESEND_API_KEY;
-          const BASE_URL = process.env.BASE_URL || 'https://news-digest-tau-umber.vercel.app';
+          const BASE_URL = 'https://news-digest-tau-umber.vercel.app';
 
           async function fetchJSON(url, options) {
             const res = await fetch(url, options);
@@ -26,102 +23,5 @@ jobs:
           }
 
           async function collectNews(sectionLabel, isWar) {
-            const prompt = isWar
-              ? `오늘 날짜 기준 이란, 미국, 이스라엘 간 전쟁 및 분쟁의 최신 현황을 웹에서 검색하여 가장 중요한 3가지를 아래 형식으로 답하세요. 분석내용에는 반드시 군사적현황, 정치적파급효과, 글로벌경제및에너지영향, 한국경제영향을 각각 2-3문장씩 포함하여 상세히 작성해주세요:\n##1##제목||[군사적현황] 내용. [정치적파급] 내용. [경제영향] 내용. [한국경제] 내용.\n##2##제목||[군사적현황] 내용. [정치적파급] 내용. [경제영향] 내용. [한국경제] 내용.\n##3##제목||[군사적현황] 내용. [정치적파급] 내용. [경제영향] 내용. [한국경제] 내용.`
-              : `오늘 날짜 기준 ${sectionLabel} 분야에서 세계에 영향을 미칠 수 있는 최신 주요 이슈 3건을 웹에서 검색하여 아래 형식으로 답하세요. 각 항목은 1)핵심 내용 2)글로벌 파급효과 3)한국 경제·정치에 미치는 영향을 2-3문장씩 포함하여 심층 분석해주세요:\n##1##제목||[핵심내용] 내용. [글로벌파급] 내용. [한국영향] 내용.\n##2##제목||[핵심내용] 내용. [글로벌파급] 내용. [한국영향] 내용.\n##3##제목||[핵심내용] 내용. [글로벌파급] 내용. [한국영향] 내용.`;
-
-            const messages = [{ role: 'user', content: prompt }];
-            let finalText = '';
-
-            for (let i = 0; i < 5; i++) {
-              const data = await fetchJSON('https://api.anthropic.com/v1/messages', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'x-api-key': ANTHROPIC_API_KEY,
-                  'anthropic-version': '2023-06-01',
-                },
-                body: JSON.stringify({
-                  model: 'claude-sonnet-4-5-20250929',
-                  max_tokens: 4000,
-                  tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-                  messages
-                })
-              });
-
-              const textBlocks = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-              const toolUses = (data.content || []).filter(b => b.type === 'tool_use');
-
-              if (data.stop_reason === 'end_turn' && textBlocks) { finalText = textBlocks; break; }
-              if (!toolUses.length) { finalText = textBlocks; break; }
-
-              messages.push({ role: 'assistant', content: data.content });
-              messages.push({ role: 'user', content: toolUses.map(t => ({ type: 'tool_result', tool_use_id: t.id, content: '검색 완료. 반드시 ##번호##제목||내용 형식으로만 답하세요.' })) });
-            }
-
-            const items = [];
-            for (const line of finalText.split('\n')) {
-              const match = line.match(/##\d+##(.+)\|\|(.+)/);
-              if (match) items.push({ title: match[1].trim(), summary: match[2].trim() });
-            }
-            return items;
-          }
-
-         async function saveToSupabase(sectionKey, sectionLabel, items) {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/news_cache`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Prefer': 'return=minimal'
-              },
-              body: JSON.stringify({ section_key: sectionKey, section_label: sectionLabel, items })
-            });
-           console.log('Supabase 저장 상태: ' + res.status);
-          }
-
-          async function main() {
-            const SECTIONS = [
-              { key: 'us_politics', label: '미국 정치', isWar: false },
-              { key: 'us_economy', label: '미국 경제', isWar: false },
-              { key: 'war', label: '이란·미국·이스라엘 전쟁 현황 및 분석', isWar: true },
-            ];
-
-            const allSections = {};
-
-            for (const section of SECTIONS) {
-              console.log(`수집 중: ${section.label}`);
-              const items = await collectNews(section.label, section.isWar);
-              console.log(`수집 완료: ${section.label} - ${items.length}건`);
-              await saveToSupabase(section.key, section.label, items);
-              allSections[section.key] = items;
-              await new Promise(r => setTimeout(r, 30000));
-            }
-
-            // 구독자 가져오기
-            const subData = await fetchJSON(`${SUPABASE_URL}/rest/v1/subscribers?active=eq.true`, {
-              headers: {
-                'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-              }
-            });
-
-            // 이메일 발송
-            await fetchJSON(`${BASE_URL}/api/send`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ subscribers: subData, sections: allSections })
-            });
-
-            console.log('완료!');
-          }
-
-          main().catch(console.error);
-          EOF
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          BASE_URL: https://news-digest-tau-umber.vercel.app
+            const warPrompt = '오늘 날짜 기준 이란, 미국, 이스라엘 간 전쟁 및 분쟁의 최신 현황을 웹에서 검색하여 가장 중요한 3가지를 아래 형식으로 답하세요. 분석내용에는 반드시 군사적현황, 정치적파급효과, 글로벌경제및에너지영향, 한국경제영향을 각각 2-3문장씩 포함하여 상세히 작성해주세요:\n##1##제목||[군사적현황] 내용. [정치적파급] 내용. [경제영향] 내용. [한국경제] 내용.\n##2##제목||[군사적현황] 내용. [정치적파급] 내용. [경제영향] 내용. [한국경제] 내용.\n##3##제목||[군사적현황] 내용. [정치적파급] 내용. [경제영향] 내용. [한국경제] 내용.';
+            const generalPrompt = '오늘 날짜 기준 ' + sectionLabel + ' 분야에서 세계에 영향을 미칠 수 있는 최신
