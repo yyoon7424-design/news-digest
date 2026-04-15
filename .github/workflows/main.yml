@@ -67,8 +67,8 @@ jobs:
             return items;
           }
 
-          async function saveToSupabase(sectionKey, sectionLabel, items) {
-            await fetchJSON(`${SUPABASE_URL}/rest/v1/news_cache`, {
+         async function saveToSupabase(sectionKey, sectionLabel, items) {
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/news_cache`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -78,6 +78,7 @@ jobs:
               },
               body: JSON.stringify({ section_key: sectionKey, section_label: sectionLabel, items })
             });
+            console.log(`Supabase 저장 상태: ${res.status}`);
           }
 
           async function main() {
