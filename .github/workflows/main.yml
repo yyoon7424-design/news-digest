@@ -78,7 +78,7 @@ jobs:
               },
               body: JSON.stringify({ section_key: sectionKey, section_label: sectionLabel, items })
             });
-            console.log(`Supabase 저장 상태: ${res.status}`);
+           console.log('Supabase 저장 상태: ' + res.status);
           }
 
           async function main() {
