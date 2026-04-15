@@ -91,7 +91,7 @@ jobs:
               allSections[s.key] = items;
               if (i < SECTIONS.length - 1) {
                 console.log('Waiting 30s...');
-                await new Promise(r => setTimeout(r, 30000));
+                await new Promise(r => setTimeout(r, 60000));
               }
             }
 
