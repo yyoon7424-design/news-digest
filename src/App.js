@@ -2,11 +2,8 @@ import { useState, useEffect } from "react";
 import "./App.css";
 
 const SECTIONS = [
-  { key: "politics", label: "세계 정치", icon: "🌍" },
-  { key: "economy", label: "글로벌 경제", icon: "📈" },
-  { key: "markets", label: "글로벌 증시", icon: "💹" },
-  { key: "semiconductor", label: "반도체", icon: "🔬" },
-  { key: "ai", label: "AI 산업", icon: "🤖" },
+  { key: "us_politics", label: "미국 정치", icon: "🏛️" },
+  { key: "us_economy", label: "미국 경제", icon: "💵" },
   { key: "war", label: "이란·미국·이스라엘 전쟁 현황 및 분석", icon: "⚔️" },
 ];
 
@@ -44,6 +41,7 @@ function SectionBlock({ label, icon, items, loading, errorMsg }) {
         </div>
       ) : (items || []).map((item, i) => {
         const isWar = item.summary && item.summary.includes("[군사적현황]");
+        const isAnalysis = item.summary && item.summary.includes("[핵심내용]");
         if (isWar) {
           const milMatch = item.summary.match(/\[군사적현황\](.*?)(?=\[정치적파급\]|$)/s);
           const polMatch = item.summary.match(/\[정치적파급\](.*?)(?=\[경제영향\]|$)/s);
@@ -59,6 +57,19 @@ function SectionBlock({ label, icon, items, loading, errorMsg }) {
             </div>
           );
         }
+        if (isAnalysis) {
+  const coreMatch = item.summary.match(/\[핵심내용\](.*?)(?=\[글로벌파급\]|$)/s);
+  const globalMatch = item.summary.match(/\[글로벌파급\](.*?)(?=\[한국영향\]|$)/s);
+  const koreaMatch = item.summary.match(/\[한국영향\](.*?)$/s);
+  return (
+    <div key={i} className="news-item" style={{ borderLeft: "3px solid #2980b9", marginBottom: "16px" }}>
+      <div className="news-title" style={{ color: "#2980b9" }}>{i + 1}. {item.title}</div>
+      {coreMatch && <div style={{ marginTop: "12px", padding: "12px 16px", background: "#eaf4fb", borderRadius: "8px", lineHeight: "1.8" }}><div style={{ fontSize: "16px", fontWeight: "700", marginBottom: "6px", color: "#1a5276" }}>📌 핵심 내용</div><div style={{ fontSize: "13px", color: "#333" }}>{coreMatch[1].trim()}</div></div>}
+      {globalMatch && <div style={{ marginTop: "8px", padding: "12px 16px", background: "#f0fff4", borderRadius: "8px", lineHeight: "1.8" }}><div style={{ fontSize: "16px", fontWeight: "700", marginBottom: "6px", color: "#1e8449" }}>🌐 글로벌 파급</div><div style={{ fontSize: "13px", color: "#333" }}>{globalMatch[1].trim()}</div></div>}
+      {koreaMatch && <div style={{ marginTop: "8px", padding: "12px 16px", background: "#fffbf0", borderRadius: "8px", lineHeight: "1.8" }}><div style={{ fontSize: "16px", fontWeight: "700", marginBottom: "6px", color: "#b7770d" }}>🇰🇷 한국 영향</div><div style={{ fontSize: "13px", color: "#333" }}>{koreaMatch[1].trim()}</div></div>}
+    </div>
+  );
+}
         return (
           <div key={i} className="news-item">
             <div className="news-title">{i + 1}. {item.title}</div>
@@ -104,13 +115,10 @@ function SubscribePage({ onSwitch, onSubscribe }) {
       </div>
       <div className="feature-grid">
         {[
-          { icon: "🌍", label: "세계 정치", desc: "주요 5건" },
-          { icon: "📈", label: "글로벌 경제", desc: "주요 5건" },
-          { icon: "💹", label: "글로벌 증시", desc: "주요 5건" },
-          { icon: "🔬", label: "반도체", desc: "주요 5건" },
-          { icon: "🤖", label: "AI 산업", desc: "주요 5건" },
-          { icon: "⚔️", label: "전쟁 현황 분석", desc: "심층 분석" },
-          { icon: "⏰", label: "오전 8시 발송", desc: "매일 정시" },
+         { icon: "🏛️", label: "미국 정치", desc: "심층 분석 3건" },
+         { icon: "💵", label: "미국 경제", desc: "심층 분석 3건" },
+         { icon: "⚔️", label: "전쟁 현황 분석", desc: "심층 분석 3건" },
+         { icon: "⏰", label: "오전 8시 발송", desc: "매일 정시" },
         ].map(f => (
           <div key={f.label} className="feature-card">
             <div className="feature-icon">{f.icon}</div>
