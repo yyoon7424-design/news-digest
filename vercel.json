@@ -5,7 +5,12 @@
   "crons": [
     {
       "path": "/api/cron",
-      "schedule": "16 13 * * *"
+      "schedule": "0 23 * * *"
     }
-  ]
+  ],
+  "functions": {
+    "api/news.js": {
+      "maxDuration": 60
+    }
+  }
 }
