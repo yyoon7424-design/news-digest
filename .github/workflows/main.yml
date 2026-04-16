@@ -31,6 +31,7 @@ jobs:
               let finalText = '';
 
               for (let i = 0; i < 5; i++) {
+                console.log('API 호출: ' + label + ' (시도 ' + (i+1) + ')');
                 const data = await fetchJSON('https://api.anthropic.com/v1/messages', {
                   method: 'POST',
                   headers: {
@@ -46,6 +47,7 @@ jobs:
                   })
                 });
                 const textBlocks = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+                if (data.error) { console.log('API 오류: ' + JSON.stringify(data.error)); break; }
                 const toolUses = (data.content||[]).filter(b=>b.type==='tool_use');
                 if (data.stop_reason==='end_turn' && textBlocks) { finalText=textBlocks; break; }
                 if (!toolUses.length) { finalText=textBlocks; break; }
