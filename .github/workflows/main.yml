@@ -1,4 +1,4 @@
-  name: Daily News Email
+name: Daily News Email
 
 on:
   schedule:
@@ -19,24 +19,25 @@ jobs:
             const BASE_URL = 'https://news-digest-tau-umber.vercel.app';
 
             async function fetchJSON(url, opts) {
-  const res = await fetch(url, opts);
-  const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch(e) {
-    console.log('fetchJSON 오류 (' + res.status + '): ' + text.slice(0, 200));
-    return {};
-  }
-}
+              const res = await fetch(url, opts);
+              const text = await res.text();
+              try {
+                return JSON.parse(text);
+              } catch(e) {
+                console.log('fetchJSON error (' + res.status + '): ' + text.slice(0, 200));
+                return {};
+              }
+            }
+
             async function collectNews(label, isWar) {
-              const warPrompt = `Today, search the web for the latest developments in the Iran-US-Israel war. Return the 3 most important items in this EXACT format only:\n##1##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.\n##2##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.\n##3##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.`;
-              const genPrompt = `Search the web for today's top 3 ${label} news items that impact the world. For each item include: 1) Key content 2) Global impact 3) Impact on Korea. Use this EXACT format only:\n##1##Title||[Key] content. [Global] content. [Korea] content.\n##2##Title||[Key] content. [Global] content. [Korea] content.\n##3##Title||[Key] content. [Global] content. [Korea] content.`;
+              const warPrompt = 'Today, search the web for the latest developments in the Iran-US-Israel war. Return the 3 most important items in this EXACT format only:\n##1##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.\n##2##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.\n##3##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.';
+              const genPrompt = 'Search the web for today\'s top 3 ' + label + ' news items that impact the world. For each item include: 1) Key content 2) Global impact 3) Impact on Korea. Use this EXACT format only:\n##1##Title||[Key] content. [Global] content. [Korea] content.\n##2##Title||[Key] content. [Global] content. [Korea] content.\n##3##Title||[Key] content. [Global] content. [Korea] content.';
               const prompt = isWar ? warPrompt : genPrompt;
               const messages = [{ role: 'user', content: prompt }];
               let finalText = '';
 
               for (let i = 0; i < 5; i++) {
-                console.log('API 호출: ' + label + ' (시도 ' + (i+1) + ')');
+                console.log('API call: ' + label + ' (attempt ' + (i+1) + ')');
                 const data = await fetchJSON('https://api.anthropic.com/v1/messages', {
                   method: 'POST',
                   headers: {
@@ -51,13 +52,13 @@ jobs:
                     messages
                   })
                 });
-                const textBlocks = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-                if (data.error) { console.log('API 오류: ' + JSON.stringify(data.error)); break; }
-                const toolUses = (data.content||[]).filter(b=>b.type==='tool_use');
+                if (data.error) { console.log('API error: ' + JSON.stringify(data.error)); break; }
+                const textBlocks = (data.content||[]).filter(function(b){ return b.type==='text'; }).map(function(b){ return b.text; }).join('');
+                const toolUses = (data.content||[]).filter(function(b){ return b.type==='tool_use'; });
                 if (data.stop_reason==='end_turn' && textBlocks) { finalText=textBlocks; break; }
                 if (!toolUses.length) { finalText=textBlocks; break; }
                 messages.push({ role:'assistant', content:data.content });
-                messages.push({ role:'user', content:toolUses.map(t=>({ type:'tool_result', tool_use_id:t.id, content:'Done. Reply in ##N##Title||content format only.' })) });
+                messages.push({ role:'user', content:toolUses.map(function(t){ return { type:'tool_result', tool_use_id:t.id, content:'Done. Reply in ##N##Title||content format only.' }; }) });
               }
 
               const items = [];
@@ -65,7 +66,7 @@ jobs:
                 const m = line.match(/##\d+##(.+)\|\|(.+)/);
                 if (m) items.push({ title: m[1].trim(), summary: m[2].trim() });
               }
-              console.log('Raw text: ' + finalText.slice(0, 200));
+              console.log('Raw text: ' + finalText.slice(0, 300));
               return items;
             }
 
@@ -78,7 +79,7 @@ jobs:
                   'Authorization': 'Bearer ' + SUPA_KEY,
                   'Prefer': 'return=minimal'
                 },
-                body: JSON.stringify({ section_key: key, section_label: label, items })
+                body: JSON.stringify({ section_key: key, section_label: label, items: items })
               });
               console.log('Saved ' + label + ': ' + res.status);
             }
@@ -98,8 +99,8 @@ jobs:
               await saveToSupabase(s.key, s.label, items);
               allSections[s.key] = items;
               if (i < SECTIONS.length - 1) {
-                console.log('Waiting 30s...');
-                await new Promise(r => setTimeout(r, 60000));
+                console.log('Waiting 60s...');
+                await new Promise(function(r){ setTimeout(r, 60000); });
               }
             }
 
