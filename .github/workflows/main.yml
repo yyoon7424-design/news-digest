@@ -58,6 +58,7 @@ jobs:
                 const m = line.match(/##\d+##(.+)\|\|(.+)/);
                 if (m) items.push({ title: m[1].trim(), summary: m[2].trim() });
               }
+              console.log('Raw text: ' + finalText.slice(0, 200));
               return items;
             }
 
