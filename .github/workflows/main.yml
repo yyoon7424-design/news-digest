@@ -1,4 +1,4 @@
-name: Daily News Email
+  name: Daily News Email
 
 on:
   schedule:
@@ -19,10 +19,15 @@ jobs:
             const BASE_URL = 'https://news-digest-tau-umber.vercel.app';
 
             async function fetchJSON(url, opts) {
-              const res = await fetch(url, opts);
-              return res.json();
-            }
-
+  const res = await fetch(url, opts);
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch(e) {
+    console.log('fetchJSON 오류 (' + res.status + '): ' + text.slice(0, 200));
+    return {};
+  }
+}
             async function collectNews(label, isWar) {
               const warPrompt = `Today, search the web for the latest developments in the Iran-US-Israel war. Return the 3 most important items in this EXACT format only:\n##1##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.\n##2##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.\n##3##Title||[Military] content. [Political] content. [Economic] content. [Korea] content.`;
               const genPrompt = `Search the web for today's top 3 ${label} news items that impact the world. For each item include: 1) Key content 2) Global impact 3) Impact on Korea. Use this EXACT format only:\n##1##Title||[Key] content. [Global] content. [Korea] content.\n##2##Title||[Key] content. [Global] content. [Korea] content.\n##3##Title||[Key] content. [Global] content. [Korea] content.`;
